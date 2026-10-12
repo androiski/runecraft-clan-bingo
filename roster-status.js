@@ -1,5 +1,5 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-12 04:36 UTC",
+ "checked": "2026-10-12 17:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
@@ -34,7 +34,7 @@ window.ROSTER_STATUS = {
   },
   "BenReported": {
    "status": "synced",
-   "log_last_changed": "2026-10-11 03:07:58"
+   "log_last_changed": "2026-10-12 16:46:46"
   },
   "duhmass": {
    "status": "synced",
