@@ -1,9 +1,9 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-11 22:36 UTC",
+ "checked": "2026-10-12 04:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
-   "log_last_changed": "2026-10-11 17:00:16"
+   "log_last_changed": "2026-10-12 00:44:16"
   },
   "Cenaras": {
    "status": "unsynced"
@@ -57,7 +57,7 @@ window.ROSTER_STATUS = {
   },
   "Roof Sniffa": {
    "status": "synced",
-   "log_last_changed": "2026-10-07 04:53:10"
+   "log_last_changed": "2026-10-12 00:56:36"
   },
   "Exviped": {
    "status": "synced",
@@ -73,14 +73,14 @@ window.ROSTER_STATUS = {
   },
   "nafun": {
    "status": "synced",
-   "log_last_changed": "2026-10-08 21:24:41"
+   "log_last_changed": "2026-10-12 00:37:35"
   },
   "tv milk": {
    "status": "unsynced"
   },
   "rpwh": {
    "status": "synced",
-   "log_last_changed": "2026-10-11 02:11:43"
+   "log_last_changed": "2026-10-12 03:13:24"
   },
   "Im Lablabi": {
    "status": "unsynced"
