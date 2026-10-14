@@ -1,5 +1,5 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-14 02:36 UTC",
+ "checked": "2026-10-14 08:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
@@ -30,11 +30,11 @@ window.ROSTER_STATUS = {
   },
   "ll Grub ll": {
    "status": "synced",
-   "log_last_changed": "2026-10-13 20:14:51"
+   "log_last_changed": "2026-10-14 04:14:54"
   },
   "BenReported": {
    "status": "synced",
-   "log_last_changed": "2026-10-14 01:14:19"
+   "log_last_changed": "2026-10-14 03:52:31"
   },
   "duhmass": {
    "status": "synced",
@@ -73,7 +73,7 @@ window.ROSTER_STATUS = {
   },
   "nafun": {
    "status": "synced",
-   "log_last_changed": "2026-10-12 00:37:35"
+   "log_last_changed": "2026-10-14 03:19:21"
   },
   "tv milk": {
    "status": "unsynced"
