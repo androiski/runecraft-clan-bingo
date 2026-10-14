@@ -1,5 +1,5 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-13 20:36 UTC",
+ "checked": "2026-10-14 02:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
@@ -34,7 +34,7 @@ window.ROSTER_STATUS = {
   },
   "BenReported": {
    "status": "synced",
-   "log_last_changed": "2026-10-12 16:46:46"
+   "log_last_changed": "2026-10-14 01:14:19"
   },
   "duhmass": {
    "status": "synced",
@@ -42,14 +42,14 @@ window.ROSTER_STATUS = {
   },
   "ndru": {
    "status": "synced",
-   "log_last_changed": "2026-10-06 22:03:59"
+   "log_last_changed": "2026-10-14 00:46:40"
   },
   "Mspartam": {
    "status": "unsynced"
   },
   "789": {
    "status": "synced",
-   "log_last_changed": "2026-10-01 14:24:22"
+   "log_last_changed": "2026-10-13 21:24:31"
   },
   "Sparge": {
    "status": "synced",
@@ -80,7 +80,7 @@ window.ROSTER_STATUS = {
   },
   "rpwh": {
    "status": "synced",
-   "log_last_changed": "2026-10-13 13:01:38"
+   "log_last_changed": "2026-10-13 23:47:34"
   },
   "Im Lablabi": {
    "status": "unsynced"
