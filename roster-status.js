@@ -1,5 +1,5 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-15 05:36 UTC",
+ "checked": "2026-10-15 23:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
@@ -26,7 +26,7 @@ window.ROSTER_STATUS = {
   },
   "The Biplane": {
    "status": "synced",
-   "log_last_changed": "2026-08-29 21:23:31"
+   "log_last_changed": "2026-10-15 23:30:07"
   },
   "ll Grub ll": {
    "status": "synced",
