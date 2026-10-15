@@ -1,9 +1,9 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-10 01:37 UTC",
+ "checked": "2026-10-15 23:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
-   "log_last_changed": "2026-10-08 16:51:43"
+   "log_last_changed": "2026-10-14 16:24:34"
   },
   "Cenaras": {
    "status": "unsynced"
@@ -26,15 +26,15 @@ window.ROSTER_STATUS = {
   },
   "The Biplane": {
    "status": "synced",
-   "log_last_changed": "2026-08-29 21:23:31"
+   "log_last_changed": "2026-10-15 23:30:07"
   },
   "ll Grub ll": {
    "status": "synced",
-   "log_last_changed": "2026-10-10 00:22:30"
+   "log_last_changed": "2026-10-15 04:47:16"
   },
   "BenReported": {
    "status": "synced",
-   "log_last_changed": "2026-10-09 22:15:58"
+   "log_last_changed": "2026-10-14 03:52:31"
   },
   "duhmass": {
    "status": "synced",
@@ -42,14 +42,14 @@ window.ROSTER_STATUS = {
   },
   "ndru": {
    "status": "synced",
-   "log_last_changed": "2026-10-06 22:03:59"
+   "log_last_changed": "2026-10-14 00:46:40"
   },
   "Mspartam": {
    "status": "unsynced"
   },
   "789": {
    "status": "synced",
-   "log_last_changed": "2026-10-01 14:24:22"
+   "log_last_changed": "2026-10-13 21:24:31"
   },
   "Sparge": {
    "status": "synced",
@@ -57,11 +57,11 @@ window.ROSTER_STATUS = {
   },
   "Roof Sniffa": {
    "status": "synced",
-   "log_last_changed": "2026-10-07 04:53:10"
+   "log_last_changed": "2026-10-12 00:56:36"
   },
   "Exviped": {
    "status": "synced",
-   "log_last_changed": "2026-10-09 19:48:07"
+   "log_last_changed": "2026-10-10 18:46:51"
   },
   "Bhnr": {
    "status": "synced",
@@ -73,14 +73,14 @@ window.ROSTER_STATUS = {
   },
   "nafun": {
    "status": "synced",
-   "log_last_changed": "2026-10-08 21:24:41"
+   "log_last_changed": "2026-10-14 03:19:21"
   },
   "tv milk": {
    "status": "unsynced"
   },
   "rpwh": {
    "status": "synced",
-   "log_last_changed": "2026-10-09 00:41:34"
+   "log_last_changed": "2026-10-14 16:27:51"
   },
   "Im Lablabi": {
    "status": "unsynced"
@@ -98,11 +98,11 @@ window.ROSTER_STATUS = {
   },
   "Dead Naseeph": {
    "status": "synced",
-   "log_last_changed": "2026-09-29 19:13:11"
+   "log_last_changed": "2026-10-10 17:25:43"
   },
   "LootBuster42": {
    "status": "synced",
-   "log_last_changed": "2026-10-09 01:35:26"
+   "log_last_changed": "2026-10-13 00:15:13"
   },
   "PlE": {
    "status": "synced",
