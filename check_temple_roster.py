@@ -27,7 +27,7 @@ TEAMS = {
     "The Desert Dogs": ["duhmass", "ndru", "Mspartam", "789", "Sparge",
                         "Roof Sniffa", "Exviped", "Bhnr", "Halfmeatball", "nafun"],
     "The Bakery": ["tv milk", "rpwh", "Im Lablabi", "nimbis", "Gpmorgnchase",
-                   "spotttt", "Dead Naseeph", "LootBuster42", "PlE", "Alex Welshy"],
+                   "spotttt", "Naseeph", "Dead Naseeph", "LootBuster42", "PlE", "Alex Welshy"],
 }
 
 URL = "https://templeosrs.com/api/player_info.php"
