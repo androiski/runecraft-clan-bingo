@@ -1,5 +1,5 @@
 // Update job: reads the clan's TempleOSRS group, works out drops and progress, and writes
-// data/state.json for the site. Runs every 30 minutes from GitHub Actions
+// data/state.json for the site. Runs every 15 minutes from GitHub Actions
 // (.github/workflows/update.yml). Node 20+, no dependencies.
 //
 // Each run makes 3 requests to TempleOSRS:

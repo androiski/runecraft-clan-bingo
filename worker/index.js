@@ -17,8 +17,8 @@ const LIST = "entries";
 
 export default {
   // Cron Triggers (wrangler.toml): GitHub's own schedule is unreliable (runs can come hours
-  // late), so the Worker starts the board update every 30 minutes and the roster check
-  // every hour instead.
+  // late), so the Worker starts the board update every 15 minutes instead (and, before
+  // the event, the roster check every hour at "30 * * * *").
   async scheduled(event, env){
     await dispatch(env, event.cron === "30 * * * *" ? "roster" : "update-board");
   },
@@ -121,7 +121,7 @@ async function same(a, b){
 }
 
 // Asks GitHub to run the board update now (repository_dispatch), so the entry shows within a
-// minute or two instead of at the next half-hourly run.
+// minute or two instead of at the next 15-minute run.
 const rebuild = env => dispatch(env, "mod-entry");
 
 // Starts a GitHub workflow that listens for this repository_dispatch event type.
