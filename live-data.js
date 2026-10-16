@@ -52,7 +52,7 @@ async function loadSample(){
 
 
 let data, sampleShown = false;
-if (live){
+if (live && Date.now() >= Date.parse(live.start)){   // the update job starts saving before the start
   mode = "live";
   data = boardData(live);
   startMs = Date.parse(live.start); endMs = Date.parse(live.end); updatedMs = Date.parse(live.updated);
@@ -144,7 +144,7 @@ if (mode === "preview"){
 }
 
 // Live: check for new data every 5 minutes and reload when the update job has saved some.
-if (mode === "live" && Date.now() < endMs + 3 * 3600e3) setInterval(async () => {
+if (mode === "live" && !live.final && Date.now() < (finalMs || endMs + 3 * 3600e3)) setInterval(async () => {
   try {
     const res = await fetch("data/state.json", {cache: "no-cache"});
     if (res.ok && (await res.json()).updated !== live.updated) location.reload();
@@ -169,7 +169,7 @@ function countdown(el, ms){
   timerId = setInterval(() => {
     tick();
     // Reload once when it reaches zero, so the page moves on (not if it had already passed).
-    if (!passedAlready && ms <= Date.now() && mode === "live"){ clearInterval(timerId); setTimeout(() => location.reload(), 2000); }
+    if (!passedAlready && ms <= Date.now() && mode !== "demo"){ clearInterval(timerId); setTimeout(() => location.reload(), 2000); }
   }, 1000);
 }
 function announce(cls, title, ms, label, note){
@@ -246,7 +246,7 @@ function renderResults(){
   const sub = `${plural(chosen.points, "point")} · ${plural(chosen.tiles, "tile")} · ${plural(chosen.lines, "line")}` +
     (tied ? `<br>Tied on points; reached this score first.` : "");
   announce(isWinner ? "win" : "team", `${teamIco(chosen.t, "tico-l")}${title}`, 0, "", sub);
-  box.querySelector("h2").insertAdjacentHTML("afterend", fireworksControl());   // right under the title, easy to spot
+  if (isWinner) box.querySelector("h2").insertAdjacentHTML("afterend", fireworksControl());   // right under the title, easy to spot
   box.style.setProperty("--c", colorVar(chosen.t.id));
   box.insertAdjacentHTML("beforeend",
     `<p class="congrats">${isWinner ? `Congrats to ${names(chosen.t)}!` : "Player contributions"}</p>` +
