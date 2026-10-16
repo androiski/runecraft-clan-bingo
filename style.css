@@ -267,7 +267,7 @@ section.rosters h2,section.legend h2{font-family:var(--display);font-weight:400;
 .callout h2{font-family:var(--display);font-weight:400;color:var(--gold);font-size:24px;text-shadow:var(--shadow);margin:0 0 8px}
 .callout ol{margin:0 0 8px;padding-left:1.3em}
 .callout li{margin:4px 0}
-.callout a{color:var(--gold)}
+.callout a,.rules a{color:var(--gold)}
 section.rules{margin-top:32px}
 section.rules h2{font-family:var(--display);font-weight:400;color:var(--gold);font-size:32px;text-shadow:var(--shadow);margin:0 0 4px}
 .rule{font-size:.9rem;margin:-6px 0 14px;padding:8px 10px;background:var(--bg);border-radius:4px}
