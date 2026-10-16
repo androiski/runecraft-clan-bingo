@@ -17,6 +17,6 @@ binding = "ENTRIES"
 id = "fe1f0a63096f4831a800b7b66f8fae82"
 
 # Starts the board update every 30 min and the roster check every hour (see scheduled() in
-# index.js). Times are UTC.
+# index.js), plus one board update a minute after the end (19 Oct 10:00). Times are UTC.
 [triggers]
-crons = ["15,45 * * * *", "30 * * * *"]
+crons = ["15,45 * * * *", "30 * * * *", "1 10 19 10 *"]

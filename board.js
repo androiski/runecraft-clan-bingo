@@ -261,6 +261,8 @@ function renderLegend(){
 // A stackable seen several at once is one drop with qty (missing means 1).
 const qtySum = list => list.reduce((s, d) => s + (d.qty || 1), 0);
 const qtyName = d => d.qty > 1 ? `${d.name} ×${d.qty}` : d.name;
+// Why a listed drop doesn't count, if it doesn't.
+const dropNote = d => d.held ? " (held: came in with old log items, a mod should check)" : d.voided ? " (unchecked by a mod)" : d.kind === "other" ? " (doesn't count)" : "";
 const got = (item, by, when) => `${item}${by && by !== "Team" ? ` - ${by}` : ""} @ ${dayLabel(typeof when === "number" ? when : hoursOf(when))}`;
 // Who got a tile: the finisher, plus anyone whose drops it needed. Count tiles take the drops
 // that made up the target; Barrows only the pieces of the set that was finished. XP tiles
@@ -365,7 +367,7 @@ function renderDry(){
     for (let k = 1; k < s.pts.length; k++) d += `H${x(s.pts[k][0])}V${y(s.pts[k][1])}`;
     const others = s.drops.filter(dr=>dr.kind !== "done")
       .map(dr=>marker(dr.kind, x(dr.h), y(valueAt(s.pts, dr.h)), ICON(dr.id),
-        `${got(qtyName(dr), dr.by, dr.h)}${dr.voided ? " (unchecked by a mod)" : dr.kind === "other" ? " (doesn't count)" : ""}`, dr.manual, dr.voided)).join("");
+        `${got(qtyName(dr), dr.by, dr.h)}${dropNote(dr)}`, dr.manual, dr.voided)).join("");
     let done = "";
     if (s.doneH != null){
       const src = tile.s === "xp" ? tr.icon : (s.e.id ? ICON(s.e.id) : null);
@@ -385,7 +387,7 @@ function renderDry(){
     const all = [...s.drops.filter(dr=>dr.kind !== "done"),
       ...(s.e && s.e.done && s.e.id ? [{name:s.e.item, id:s.e.id, by:s.e.by, h:hoursOf(s.e.when), qty:s.e.qty, kind:"done"}] : [])];
     const icons = m => all.filter(dr=>dr.by === m).sort((a,b)=>a.h-b.h).map(dr=>
-      `<img class="ico ${dr.kind}" src="${ICON(dr.id)}" alt="${qtyName(dr)}" title="${got(qtyName(dr), dr.by, dr.h)}${dr.voided ? " (unchecked by a mod)" : dr.kind === "other" ? " (doesn't count)" : ""}">`).join("");
+      `<img class="ico ${dr.kind}" src="${ICON(dr.id)}" alt="${qtyName(dr)}" title="${got(qtyName(dr), dr.by, dr.h)}${dropNote(dr)}">`).join("");
     const who = ((byPlayer[selected]||{})[s.t.id]||[]);
     const split = who.length ? `<tr class="who"><td colspan="3">${who.map(([m,v])=>`<span>${m} <b>${fmtN(v, tr.unit)}</b>${icons(m)}</span>`).join('<i>·</i>')}</td></tr>` : "";
     return `<tr class="team"><td><span class="sw" style="--c:${colorVar(s.t.id)}"></span> ${teamIco(s.t)}${s.t.name}</td>` +
@@ -507,7 +509,7 @@ function playerStats(team){
     let dropsGot = 0, effort = 0;
     TILES.forEach((tile, i) => {
       const e = t[i], tr = TRACK[i];
-      const items = ((drops[i] || {})[team.id] || []).filter(d => mine(d.by))
+      const items = ((drops[i] || {})[team.id] || []).filter(d => mine(d.by) && !d.held)
         .map(d => ({src: ICON(d.id), name: qtyName(d), qty: d.qty || 1, counts: d.kind !== "other", finished: false}));
       // A tile counts for everyone who helped get it (see helpers); the finishing item shows
       // only on the player who got it.
