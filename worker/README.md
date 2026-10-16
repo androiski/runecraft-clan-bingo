@@ -7,7 +7,7 @@ for when TempleOSRS missed it. The mod password is checked here, never in the pu
 How an entry flows: mod saves it on the page → this Worker stores it (Cloudflare KV) →
 the Worker asks GitHub to run `.github/workflows/mod-entry.yml` → that rebuilds
 `data/state.json` with the entry counted like a drop → the page picks it up on its next
-refresh (every 5 minutes). Every half-hourly update also reads the entries, and saves a
+refresh (every 5 minutes). Every 15-minute update also reads the entries, and saves a
 copy to `data/mod-entries.json` (so git history records them too).
 
 ## One-time setup
@@ -21,7 +21,7 @@ Needs a free Cloudflare account and Node. From this `worker/` folder:
 4. A GitHub token so the Worker can trigger the rebuild: on GitHub, Settings → Developer
    settings → Fine-grained tokens → new token, only for `androiski/runecraft-clan-bingo`,
    with **Contents: Read and write**. Then `npx wrangler secret put GITHUB_TOKEN` and
-   paste it. (Optional: without it, entries still show at the next half-hourly update.)
+   paste it. (Optional: without it, entries still show at the next 15-minute update.)
 5. `npx wrangler deploy`. It prints the Worker's address, like
    `https://runecraft-bingo-mods.<you>.workers.dev`.
 6. Put that address in `config.json` as `"mod_api"` and push. "Mod entry" then appears

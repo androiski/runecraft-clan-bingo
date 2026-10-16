@@ -11,7 +11,7 @@ Players (RuneLite + TempleOSRS plugin)
         │  drops and stats sent to TempleOSRS
         ▼
 TempleOSRS clan group
-        │  3 requests every 30 min
+        │  3 requests every 15 min
         ▼
 update.js (GitHub Actions) ──► data/*.json (saved to this repo)
                                       │
@@ -33,7 +33,7 @@ mods: screenshots are the primary verification, and the board tracks progress li
 
 ### The update job (`update.js`)
 
-Every 30 minutes (`.github/workflows/update.yml`) it makes 3 read-only requests:
+Every 15 minutes (`.github/workflows/update.yml`) it makes 3 read-only requests:
 
 | Request | Gives us | Used for |
 |---|---|---|
@@ -81,7 +81,7 @@ how the drop reached TempleOSRS:
 | How it shows up | Time recorded | Accuracy |
 |---|---|---|
 | Item new to the player's collection log | TempleOSRS's timestamp from the recent-items feed | Exact, with Automatically sync Collection Log on |
-| Repeat drop (player already had it) | The run (every 30 min) that first saw the count go up | Up to 30 min late, plus however long the player takes to reopen that log page |
+| Repeat drop (player already had it) | The player's log sync that brought the new count (TempleOSRS `last_checked`) | As late as the player takes to reopen that log page |
 | XP tiles | The first run where the team's gain passes the target | Only as fresh as each player's last TempleOSRS update (Auto-Update runs on logout), so it can be hours late |
 | Count tiles (3 shards, seeds, hally pieces) and Barrows | The drop that finished it, by the rules above | Same as that drop |
 

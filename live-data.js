@@ -1,4 +1,4 @@
-// Entry point. Loads data/state.json (written every 30 minutes by update.js) and starts the
+// Entry point. Loads data/state.json (written every 15 minutes by update.js) and starts the
 // board. Before there's live data it shows an empty board, with sample data one click away.
 // Also runs the results box under the title: countdown, "started", the winner, or the
 // chosen team's place and player contributions.
@@ -92,10 +92,10 @@ function renderStatus(){
       : finalMs && now < finalMs ? `checking late drops · results final ${clock(finalMs)}` : "final results"]
     .filter(Boolean).join(" · ");
   for (const el of document.querySelectorAll("[data-since]")) el.textContent = `${clock(updatedMs)} (${since(updatedMs)})`;
-  // Under the board's title: when the live board was last updated (it updates every 30 min).
+  // Under the board's title: when the live board was last updated (it updates every 15 min).
   const sub = document.getElementById("boardUpdated");
   if (sub) sub.textContent = mode === "live" || mode === "demo" ? `Last updated ${clock(updatedMs)} (${since(updatedMs)})`
-    : mode === "preview" && !sampleShown ? "Updates every 30 minutes once the bingo starts" : "";
+    : mode === "preview" && !sampleShown ? "Updates every 15 minutes once the bingo starts" : "";
 }
 setInterval(renderStatus, 30000);
 

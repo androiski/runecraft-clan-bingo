@@ -1,11 +1,11 @@
-# Every 30 minutes: read the clan's TempleOSRS group and save the board's data.
+# Every 15 minutes: read the clan's TempleOSRS group and save the board's data.
 # update.js does nothing (and doesn't contact Temple) until config.json is filled in,
 # or outside the event window. It can also be run by hand from the Actions tab.
 name: Update board
 
 on:
   repository_dispatch:
-    types: [update-board]    # started every 30 min by the Cloudflare Worker's Cron Trigger
+    types: [update-board]    # started every 15 min by the Cloudflare Worker's Cron Trigger
   schedule:
     - cron: "15,45 * * * *"  # backup only: GitHub's scheduler can run hours late
   workflow_dispatch:

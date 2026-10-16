@@ -120,7 +120,7 @@ if (api){
         try {
           const r = await call("POST", "/entries", {password, entry});
           changed();
-          say(r.rebuild ? "Unchecked. The board updates in a minute or two." : "Unchecked. It shows on the board at the next update (within 30 minutes).");
+          say(r.rebuild ? "Unchecked. The board updates in a minute or two." : "Unchecked. It shows on the board at the next update (within 15 minutes).");
         } catch (err){ if (err.status === 401){ lock(); say(err.message); } else fail(f, btn, "Uncheck", err.message); }
       };
       wire(f);
@@ -161,7 +161,7 @@ if (api){
       try {
         const r = await call("POST", "/entries", {password, entry});
         changed();   // locks again; the next entry needs the password
-        say(r.rebuild ? "Saved. The board updates in a minute or two." : "Saved. It shows on the board at the next update (within 30 minutes).");
+        say(r.rebuild ? "Saved. The board updates in a minute or two." : "Saved. It shows on the board at the next update (within 15 minutes).");
       } catch (err){ if (err.status === 401){ lock(); say(err.message); } else fail(f, btn, "Save entry", err.message); }
     };
     wire(f);
@@ -204,7 +204,7 @@ if (api){
       try {
         const r = await call("DELETE", `/entries/${encodeURIComponent(b.dataset.del)}`, {password});
         changed();
-        say(r.rebuild ? "Removed. The board updates in a minute or two." : "Removed. The board catches up at the next update (within 30 minutes).");
+        say(r.rebuild ? "Removed. The board updates in a minute or two." : "Removed. The board catches up at the next update (within 15 minutes).");
       } catch (err){ if (err.status === 401) lock(); say(err.message); }
     });
   }
