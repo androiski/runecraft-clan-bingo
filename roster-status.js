@@ -1,5 +1,5 @@
 window.ROSTER_STATUS = {
- "checked": "2026-10-16 00:36 UTC",
+ "checked": "2026-10-16 05:36 UTC",
  "players": {
   "yaint thiccy": {
    "status": "synced",
@@ -10,7 +10,7 @@ window.ROSTER_STATUS = {
   },
   "BIS Ben": {
    "status": "synced",
-   "log_last_changed": "2026-10-08 18:20:23"
+   "log_last_changed": "2026-10-16 02:49:07"
   },
   "chmsst": {
    "status": "unsynced"
@@ -57,7 +57,7 @@ window.ROSTER_STATUS = {
   },
   "Roof Sniffa": {
    "status": "synced",
-   "log_last_changed": "2026-10-12 00:56:36"
+   "log_last_changed": "2026-10-16 04:21:44"
   },
   "Exviped": {
    "status": "synced",
@@ -84,7 +84,8 @@ window.ROSTER_STATUS = {
    "log_last_changed": "2026-10-14 16:27:51"
   },
   "Im Lablabi": {
-   "status": "unsynced"
+   "status": "synced",
+   "log_last_changed": "2026-10-16 04:51:26"
   },
   "nimbis": {
    "status": "unsynced"
