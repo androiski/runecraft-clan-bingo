@@ -4,13 +4,14 @@
 //
 // Each run makes 3 requests to TempleOSRS:
 //   group_member_info     every member's current KC and XP
-//   group_recent_items    items new to someone's collection log, with the time they got them
 //   group_collection_log  every member's item counts, to catch repeat drops
+//   group_recent_items    items new to someone's collection log, with the time they got them
 //
 // Files in data/ (all committed, so git history is the audit trail):
 //   counts.json   item counts at the start (the baseline repeat drops are measured from)
 //   history.json  KC/XP at the start, then every change seen during the event
 //   events.json   every drop counted, with player, item and time
+//   held.json     items held back from counting (came in with old log items; see updateDrops)
 //   mod-entries.json  tiles mods marked by hand (a copy of the list kept by the Cloudflare
 //                 Worker in worker/; each one counts like a drop)
 //   state.json    what the site shows, rebuilt from the files above each run
@@ -77,12 +78,12 @@ async function temple(url){
 }
 
 // Before the start: ask Temple to re-read the hiscores for roster players it hasn't checked in
-// 24h, so the baseline isn't months old (else their first event update books months of gains).
+// 6h, so the baseline isn't hours or months old (else their first event update books those gains).
 // The page answers in HTML, not JSON, so it skips temple(); failures are only logged.
 async function refreshStale(members, now){
   let n = 0;
   for (const m of Object.values(members.memberlist || {})){
-    if (!teamOf(m.player) || now - (+m.last_checked_unix_time || 0) < 86400) continue;
+    if (!teamOf(m.player) || now - (+m.last_checked_unix_time || 0) < 6 * 3600) continue;
     const wait = lastRequest + GAP_MS - Date.now();
     if (wait > 0) await sleep(wait);
     lastRequest = Date.now();
@@ -125,7 +126,8 @@ async function main(){
     if (!prev || now < start) return log("Nothing to rebuild before the event starts.");
     const entries = await modEntries();
     const state = finish(readJSON(path.join(DATA, "history.json"), {baseline: {}, points: []}),
-      readJSON(path.join(DATA, "events.json"), []), entries, start, end, now, prev.warnings || []);
+      readJSON(path.join(DATA, "events.json"), []), entries, start, end, now, prev.warnings || [],
+      {held: readJSON(path.join(DATA, "held.json"), [])});
     if (prev.final) state.final = true;   // a late ruling doesn't reopen the event
     state.sync = prev.sync;
     writeJSON("state.json", state);
@@ -149,8 +151,11 @@ async function main(){
 
   let members = await temple(`${API}/group_member_info.php?id=${group}&skills&bosses`);
   if (!live && await refreshStale(members, now)) members = await temple(`${API}/group_member_info.php?id=${group}&skills&bosses`);
-  const recent = await temple(`${API}/collection-log/group_recent_items.php?group=${group}&count=200`);
+  // The log before the feed: an item synced between the two calls is then in the feed (counted as
+  // new) but not yet in the counts, and the next run's count check sees it already counted.
+  // The other way round it would be counted twice (count rise now, feed item next run).
   const clog = await temple(`${API}/collection-log/group_collection_log.php?group=${group}&categories=all&includecount=1`);
+  const recent = await temple(`${API}/collection-log/group_recent_items.php?group=${group}&count=200`);
 
   const warnings = [];
   const inGroup = new Set(Object.values(members.memberlist || {}).map(m => norm(m.player)));
@@ -162,15 +167,17 @@ async function main(){
   warnings.forEach(w => log("  !", w));
 
   const entries = live ? await modEntries() : [];
-  const history = updateHistory(readJSON(path.join(DATA, "history.json"), {baseline: {}, points: []}), members, live, now, end);
-  const {counts, events} = updateDrops(
+  const history = updateHistory(readJSON(path.join(DATA, "history.json"), {baseline: {}, points: []}), members, live, now, end, start);
+  const {counts, events, held} = updateDrops(
     readJSON(path.join(DATA, "counts.json"), {}), readJSON(path.join(DATA, "events.json"), []),
-    recent, clog, live, now, start, end, entries);
+    recent, clog, live, now, start, end, entries, readJSON(path.join(DATA, "held.json"), []));
+  for (const h of held) warnings.push(`${h.rsn}: ${h.name} held (came in with old log items, a mod should check)`);
 
   writeJSON("history.json", history);
   writeJSON("counts.json", counts);
   writeJSON("events.json", events);
-  const state = finish(history, events, entries, start, end, now, warnings);
+  writeJSON("held.json", held);
+  const state = finish(history, events, entries, start, end, now, warnings, {held});
   state.sync = syncTimes(members, clog);
   writeJSON("state.json", state);
   log(`Done: ${events.length} drops counted so far.`);
@@ -189,11 +196,11 @@ async function preview(){
 
 // Builds state.json: Temple's drops plus mod entries. The winner (most points at the end) is
 // worked out by the page from state.
-function finish(history, events, entries, start, end, now, warnings, {tests = false} = {}){
+function finish(history, events, entries, start, end, now, warnings, {tests = false, held = []} = {}){
   entries = realEntries(entries, start, tests);
   const all = [...events, ...manualEvents(entries, start)].sort((a, b) => a.t - b.t);
   const voids = entries.filter(e => e.action === "void");
-  const state = buildState(history, all, start, end, now, warnings, voids);
+  const state = buildState(history, all, start, end, now, warnings, voids, held);
   state.final_at = new Date((end + VERIFY_H * 3600) * 1000).toISOString();
   return state;
 }
@@ -274,7 +281,7 @@ function manualEvents(entries, start){
 
 // history = {baseline: {rsn: {act: value}}, points: [[unixTime, {rsn: {act: value}}]]}
 // Points only record values that changed, so the file stays small.
-function updateHistory(history, members, live, now, end){
+function updateHistory(history, members, live, now, end, start){
   const current = {}, tm = {};
   for (const m of Object.values(members.memberlist || {})){
     const p = teamOf(m.player);
@@ -301,9 +308,15 @@ function updateHistory(history, members, live, now, end){
     const diff = {};
     for (const act of ACTS) if (v[act] !== latest[rsn][act]) diff[act] = v[act];
     if (!Object.keys(diff).length) continue;
+    // Changed before the start (Temple saw it after the last baseline run): part of the baseline.
     // Seen after the end (verify hours): if Temple says the XP/KC last changed before the end,
     // book it at that time so buildState keeps it.
     const tc = Math.max(+tm[rsn]?.last_changed_xp_unix_time || 0, +tm[rsn]?.last_changed_kc_unix_time || 0);
+    if (start != null && tc && tc < start){
+      Object.assign(history.baseline[rsn], diff);
+      log(`  ${rsn}: KC/XP changed before the start; added to the baseline.`);
+      continue;
+    }
     if (end != null && now > end && tc && tc <= end) late[rsn] = diff;
     else changes[rsn] = diff;
   }
@@ -331,32 +344,53 @@ function replay(history, upTo = Infinity){
 // counts = {rsn: {itemId: count}} at the start. events = [{t, rsn, id, name, src, qty?}]
 // (qty: several of a stackable seen in one go; missing means 1)
 // src "new" comes from Temple's recent-items feed (real time of the drop);
-// src "repeat" is a count that went up, timed to the run that noticed it.
+// src "repeat" is a count that went up, timed to the player's last log sync.
 // A mod entry and Temple can both report the same drop. Rule: a player's standing mod entries
 // for an item stand in for that many of Temple's, so Temple only adds drops beyond them. The
 // count path takes the log rise minus (Temple qty + mod qty); a "new to log" feed item is
 // skipped while the mod entries outnumber Temple's own drops of that item.
-function updateDrops(counts, events, recent, clog, live, now, start, end, entries = []){
+// held = [{t, rsn, id, name}]: feed items that came in 4+ in the same second for one player
+// (opening a log page for the first time makes Temple report its old items as new). They
+// don't count, the count path takes their log counts as baseline, and a mod checks them (Mark
+// done if legit; such a mod entry doesn't stand in for a later Temple drop).
+function updateDrops(counts, events, recent, clog, live, now, start, end, entries = [], held = []){
   const current = {}, changed = {};
   for (const m of clog.members || []){
     const p = teamOf(m.player);
     if (!p) continue;
-    changed[p.rsn] = Date.parse(String(m.last_changed || "").replace(" ", "T") + "Z") / 1000;
+    // When the player last synced: last_checked moves on every sync, last_changed only when a
+    // new item enters the log (not when a count goes up).
+    changed[p.rsn] = Date.parse(String(m.last_checked || m.last_changed || "").replace(" ", "T") + "Z") / 1000;
     const c = {};
     for (const [id, n] of Object.entries(m.items || {})) if (itemName.has(+id)) c[id] = +n;
     current[p.rsn] = c;
   }
-  if (!live) return {counts: current, events: []};
+  if (!live) return {counts: current, events: [], held: []};
 
   const manual = manualQty(entries, start);
   const templeQty = (rsn, id) => events.filter(e => e.rsn === rsn && e.id === id).reduce((s, e) => s + qtyOf(e), 0);
-  const seen = new Set(events.map(e => `${e.rsn}|${e.id}|${e.t}`));
+  const heldQty = (rsn, id) => held.filter(e => e.rsn === rsn && e.id === id).length;
+  const seen = new Set([...events, ...held].map(e => `${e.rsn}|${e.id}|${e.t}`));
+  // Feed items per player and second (any item, not just the board's), and items new to a log
+  // before the start.
+  const burst = new Map(), preStart = new Set();
+  for (const it of recent || []){
+    const k = `${norm(it.player)}|${+it.date_unix}`;
+    burst.set(k, (burst.get(k) || 0) + 1);
+    const p = teamOf(it.player);
+    if (p && +it.date_unix < start) preStart.add(`${p.rsn}|${+it.id}`);
+  }
   for (const it of recent || []){
     const p = teamOf(it.player), t = +it.date_unix;
     if (!p || !itemName.has(+it.id) || t < start || t > end) continue;
     const key = `${p.rsn}|${+it.id}|${t}`;
     if (seen.has(key)) continue;
     seen.add(key);
+    if (burst.get(`${norm(it.player)}|${t}`) >= 4){
+      held.push({t, rsn: p.rsn, id: +it.id, name: itemName.get(+it.id)});
+      log(`  ? ${itemName.get(+it.id)} - ${p.rsn} (held: came in with old log items, a mod should check)`);
+      continue;
+    }
     if ((manual.get(`${p.rsn}|${+it.id}`) || 0) > templeQty(p.rsn, +it.id)){
       log(`  = ${itemName.get(+it.id)} - ${p.rsn} (new to their log, already entered by a mod)`);
       continue;
@@ -374,12 +408,26 @@ function updateDrops(counts, events, recent, clog, live, now, start, end, entrie
       continue;
     }
     for (const [id, n] of Object.entries(c)){
-      const counted = templeQty(rsn, +id) + (manual.get(`${rsn}|${+id}`) || 0);
+      const k = `${rsn}|${+id}`;
+      const counted = templeQty(rsn, +id) + Math.max(0, (manual.get(k) || 0) - heldQty(rsn, +id));
+      if (counts[rsn][id] == null){
+        // Held (see above): what the log has now is the baseline.
+        if (heldQty(rsn, +id)){ counts[rsn][id] = n - counted; continue; }
+        // New to the log before the start (the feed says so) and synced again since: baseline.
+        if (preStart.has(k)) counts[rsn][id] = 1;
+      }
       const extra = n - (counts[rsn][id] || 0) - counted;
       if (extra <= 0) continue;
-      // Time it to the log's last change when that's a sane time (after the start, not in the
-      // future): the count can't have gone up after the log last changed. Else the run time.
-      const lc = changed[rsn], t = lc >= start && lc <= now ? lc : now;
+      // Time it to the player's last sync: the count went up in that sync or an earlier one.
+      // Synced before the start: it happened before the event, so it joins the baseline.
+      // No sync time, or one in the future: the run time.
+      const lc = changed[rsn];
+      if (lc < start){
+        counts[rsn][id] = n - counted;
+        log(`  ${rsn}: ${extra}x ${itemName.get(+id)} synced before the start; added to the baseline.`);
+        continue;
+      }
+      const t = lc <= now ? lc : now;
       if (t > end){
         log(`  ${rsn}: ${extra}x ${itemName.get(+id)} seen after the end, so not counted (check by hand).`);
         continue;
@@ -389,13 +437,13 @@ function updateDrops(counts, events, recent, clog, live, now, start, end, entrie
     }
   }
   events.sort((a, b) => a.t - b.t);
-  return {counts, events};
+  return {counts, events, held};
 }
 
 // ---- what the site shows -------------------------------------------------------------
 
-// voids: mod entries that uncheck a completion (see worker/index.js).
-function buildState(history, events, start, end, now, warnings, voids = []){
+// voids: mod entries that uncheck a completion (see worker/index.js). held: see updateDrops.
+function buildState(history, events, start, end, now, warnings, voids = [], held = []){
   const H = t => Math.round((t - start) / 36) / 100;   // hours since the start, 2 decimals
   const nowH = H(Math.min(now, end));
   const state = {}, dry = {}, drops = {}, byPlayer = {}, byAct = {};
@@ -476,6 +524,9 @@ function buildState(history, events, start, end, now, warnings, voids = []){
       const list = all.filter(e => !done || e !== done.ev).map(e => ({
         h: H(e.t), name: e.name, id: e.id, by: e.rsn, ...(qtyOf(e) > 1 ? {qty: e.qty} : {}), kind: info.get(e.id)[2] && !isVoid(e) ? "progress" : "other",
         ...(e.src === "manual" ? {manual: true} : {}), ...(isVoid(e) ? {voided: true} : {})}));
+      // Held drops are listed but never count.
+      for (const e of held) if (mine.has(e.rsn) && info.has(e.id) && e.t <= end)
+        list.push({h: H(e.t), name: e.name, id: e.id, by: e.rsn, kind: "other", held: true});
       if (list.length) (drops[i] ||= {})[team.id] = list;
     });
   }
