@@ -106,6 +106,8 @@ const teamOf = rsn => roster.get(norm(rsn));
 // Every item the board cares about (qualifying or not), by ID.
 const itemName = new Map();
 for (const rows of Object.values(TILE_ITEMS)) for (const r of rows) itemName.set(r[1], r[0]);
+// Barrows pieces (one chest can give several at once; see updateDrops).
+const BARROWS = new Set((TILE_ITEMS[TILES.findIndex(t => t.n === "1 Full Barrows Set")] || []).filter(r => r[3]).map(r => r[1]));
 const ACTS = [...new Set(Object.values(TRACK).flatMap(t => t.acts))];
 
 // ---- main ----------------------------------------------------------------------------
@@ -349,7 +351,8 @@ function replay(history, upTo = Infinity){
 // for an item stand in for that many of Temple's, so Temple only adds drops beyond them. The
 // count path takes the log rise minus (Temple qty + mod qty); a "new to log" feed item is
 // skipped while the mod entries outnumber Temple's own drops of that item.
-// held = [{t, rsn, id, name}]: feed items that came in 4+ in the same second for one player
+// held = [{t, rsn, id, name}]: feed items that came in 4+ in the same second for one player,
+// or 8+ Barrows pieces (counted apart: one chest can give several)
 // (opening a log page for the first time makes Temple report its old items as new). They
 // don't count, the count path takes their log counts as baseline, and a mod checks them (Mark
 // done if legit; such a mod entry doesn't stand in for a later Temple drop).
@@ -371,11 +374,13 @@ function updateDrops(counts, events, recent, clog, live, now, start, end, entrie
   const templeQty = (rsn, id) => events.filter(e => e.rsn === rsn && e.id === id).reduce((s, e) => s + qtyOf(e), 0);
   const heldQty = (rsn, id) => held.filter(e => e.rsn === rsn && e.id === id).length;
   const seen = new Set([...events, ...held].map(e => `${e.rsn}|${e.id}|${e.t}`));
-  // Feed items per player and second (any item, not just the board's), and items new to a log
-  // before the start.
+  // Feed items per player and second (any item, not just the board's; Barrows pieces counted
+  // on their own, so one chest neither holds itself nor pushes other items over), and items new
+  // to a log before the start.
   const burst = new Map(), preStart = new Set();
+  const burstKey = it => `${norm(it.player)}|${+it.date_unix}|${BARROWS.has(+it.id) ? "b" : ""}`;
   for (const it of recent || []){
-    const k = `${norm(it.player)}|${+it.date_unix}`;
+    const k = burstKey(it);
     burst.set(k, (burst.get(k) || 0) + 1);
     const p = teamOf(it.player);
     if (p && +it.date_unix < start) preStart.add(`${p.rsn}|${+it.id}`);
@@ -386,7 +391,7 @@ function updateDrops(counts, events, recent, clog, live, now, start, end, entrie
     const key = `${p.rsn}|${+it.id}|${t}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    if (burst.get(`${norm(it.player)}|${t}`) >= 4){
+    if (burst.get(burstKey(it)) >= (BARROWS.has(+it.id) ? 8 : 4)){
       held.push({t, rsn: p.rsn, id: +it.id, name: itemName.get(+it.id)});
       log(`  ? ${itemName.get(+it.id)} - ${p.rsn} (held: came in with old log items, a mod should check)`);
       continue;
