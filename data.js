@@ -4,7 +4,7 @@
 export const TEAMS = [
   {id:"tt", name:"Thompy Thiccs", icon:13071, members:["yaint thiccy","Cenaras","BIS Ben","chmsst","Wildhero","47demonsand","piinktaco","The Biplane","ll Grub ll","BenReported"]},
   {id:"dd", name:"The Desert Dogs", icon:34459, members:["duhmass","ndru","Mspartam","789","Sparge","Roof Sniffa","Exviped","Bhnr","Halfmeatball","nafun"]},
-  {id:"bk", name:"The Bakery", icon:1891, members:["tv milk","rpwh","Im Lablabi","nimbis","Gpmorgnchase","spotttt","Naseeph","Dead Naseeph","LootBuster42","PlE","Alex Welshy"]}
+  {id:"bk", name:"The Bakery", icon:1891, members:["tv milk","rpwh","Im Lablabi","nimbis","Gpmorgnchase","spotttt","Naseeph","Dead Naseeph","LootBuster42","PlE","Alex Welshy","Ipuntgnomes"]}
 ];
 
 // Second accounts: tracked and shown on their own everywhere (they're in members above), except
