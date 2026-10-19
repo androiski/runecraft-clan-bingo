@@ -261,6 +261,19 @@ function renderLegend(){
 // A stackable seen several at once is one drop with qty (missing means 1).
 const qtySum = list => list.reduce((s, d) => s + (d.qty || 1), 0);
 const qtyName = d => d.qty > 1 ? `${d.name} ×${d.qty}` : d.name;
+// Repeats of one item (same key: player, kind...) show as one icon, like an inventory stack.
+// qty is the total, h the latest; it keeps "done"/finished if any repeat had it.
+const stackUp = (list, key) => { const m = new Map();
+  for (const d of list){ const k = key(d), g = m.get(k);
+    if (!g){ m.set(k, {...d}); continue; }
+    g.qty = (g.qty || 1) + (d.qty || 1);
+    if (d.h > g.h) g.h = d.h;
+    if (d.kind === "done") g.kind = "done";
+    if (d.finished) g.finished = true; }
+  return [...m.values()]; };
+// Stack size over an icon, as in the OSRS inventory: yellow, white from 100K, green from 10M.
+const stackIco = (img, q) => !(q > 1) ? img : `<span class="stk">${img}<b class="qty${q >= 1e7 ? " m" : q >= 1e5 ? " k" : ""}">` +
+  `${q >= 1e7 ? Math.floor(q / 1e6) + "M" : q >= 1e5 ? Math.floor(q / 1e3) + "K" : q}</b></span>`;
 // Why a listed drop doesn't count, if it doesn't.
 const dropNote = d => d.held ? " (held: came in with old log items, a mod should check)" : d.voided ? " (unchecked by a mod)" : d.kind === "other" ? " (doesn't count)" : "";
 const got = (item, by, when) => `${item}${by && by !== "Team" ? ` - ${by}` : ""} @ ${dayLabel(typeof when === "number" ? when : hoursOf(when))}`;
@@ -386,8 +399,9 @@ function renderDry(){
     // Each player's gain, with icons for every drop they got here (the finishing one included).
     const all = [...s.drops.filter(dr=>dr.kind !== "done"),
       ...(s.e && s.e.done && s.e.id ? [{name:s.e.item, id:s.e.id, by:s.e.by, h:hoursOf(s.e.when), qty:s.e.qty, kind:"done"}] : [])];
-    const icons = m => all.filter(dr=>dr.by === m).sort((a,b)=>a.h-b.h).map(dr=>
-      `<img class="ico ${dr.kind}" src="${ICON(dr.id)}" alt="${qtyName(dr)}" title="${got(qtyName(dr), dr.by, dr.h)}${dropNote(dr)}">`).join("");
+    const icons = m => stackUp(all.filter(dr=>dr.by === m).sort((a,b)=>a.h-b.h),
+      dr => [dr.id, dr.kind === "other", !!dr.voided, !!dr.held].join("|")).map(dr=>
+      stackIco(`<img class="ico ${dr.kind}" src="${ICON(dr.id)}" alt="${qtyName(dr)}" title="${got(qtyName(dr), dr.by, dr.h)}${dropNote(dr)}">`, dr.qty)).join("");
     const who = ((byPlayer[selected]||{})[s.t.id]||[]);
     const split = who.length ? `<tr class="who"><td colspan="3">${who.map(([m,v])=>`<span>${m} <b>${fmtN(v, tr.unit)}</b>${icons(m)}</span>`).join('<i>·</i>')}</td></tr>` : "";
     return `<tr class="team"><td><span class="sw" style="--c:${colorVar(s.t.id)}"></span> ${teamIco(s.t)}${s.t.name}</td>` +
@@ -509,13 +523,16 @@ function playerStats(team){
     let dropsGot = 0, effort = 0;
     TILES.forEach((tile, i) => {
       const e = t[i], tr = TRACK[i];
-      const items = ((drops[i] || {})[team.id] || []).filter(d => mine(d.by) && !d.held)
-        .map(d => ({src: ICON(d.id), name: qtyName(d), qty: d.qty || 1, counts: d.kind !== "other", finished: false}));
+      let items = ((drops[i] || {})[team.id] || []).filter(d => mine(d.by) && !d.held)
+        .map(d => ({src: ICON(d.id), name: d.name, qty: d.qty || 1, counts: d.kind !== "other", voided: !!d.voided, finished: false}));
       // A tile counts for everyone who helped get it (see helpers); the finishing item shows
       // only on the player who got it.
       const finished = helpers(i, team.id, e).some(mine);
-      if (finished && mine(e.by)) items.unshift({src: e.id ? ICON(e.id) : tileIcon(i), name: e.item || tile.n, counts: true, finished: true});
-      dropsGot += qtySum(items);
+      if (finished && mine(e.by)) items.unshift({src: e.id ? ICON(e.id) : tileIcon(i), name: e.item || tile.n, qty: e.qty || 1, counts: true, voided: false, finished: true});
+      // Drops are counted per event (a stack is one); icons stack repeats of an item.
+      const n = items.length;
+      dropsGot += n;
+      items = stackUp(items, it => [it.src, it.counts, it.voided].join("|")).map(it => ({...it, name: qtyName(it)}));
       let amount = "", share = 0;
       if (tr){
         const rows = ((byPlayer[i] || {})[team.id]) || [], got = rows.filter(r => mine(r[0])).reduce((sum, r) => sum + r[1], 0);
@@ -528,10 +545,10 @@ function playerStats(team){
       effort += share;
       const ic = tr && ACT_ICON[tr.acts[0]];
       const label = tr ? (tr.short || (ACT_NAMES[tr.acts[0]] || tr.acts[0]).replace(/ XP$/, "")) : tile.n;
-      parts.push({tile: tile.n, label, amount, items, finished, share, done: finished ? (e.id ? ICON(e.id) : tileIcon(i)) : null,
+      parts.push({tile: tile.n, label, amount, items, n, finished, share, done: finished ? (e.id ? ICON(e.id) : tileIcon(i)) : null,
         icon: ic ? (typeof ic === "number" ? ICON(ic) : ic) : tileIcon(i)});
     });
-    parts.sort((a, b) => b.finished - a.finished || b.items.length - a.items.length || b.share - a.share);
+    parts.sort((a, b) => b.finished - a.finished || b.n - a.n || b.share - a.share);
     const icons = parts.filter(x => x.finished).map(x => ({src: x.done, name: x.tile}));
     return {tiles: icons.length, drops: dropsGot, parts, icons, effort};
   }
@@ -551,4 +568,4 @@ export const entryOf = (teamId, i) => (state[teamId] || {})[i] || null;
 // A team's drops on a tile, not counting the one that finished it (mod.js lists them).
 export const dropsOf = (teamId, i) => ((drops[i] || {})[teamId] || []).slice();
 
-export {render, ranking, stats, playerStats, teamIco, colorVar, dayLabel, hoursOf, whenKey, valueAt, LINES, ICON};
+export {render, ranking, stats, playerStats, stackIco, teamIco, colorVar, dayLabel, hoursOf, whenKey, valueAt, LINES, ICON};

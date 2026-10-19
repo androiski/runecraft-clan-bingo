@@ -7,7 +7,7 @@
 // states of the page; see that file.
 
 import {TEAMS, TRACK, people} from "./data.js";
-import {setData, start, render, onRender, getView, ranking, playerStats, teamIco, colorVar} from "./board.js";
+import {setData, start, render, onRender, getView, ranking, playerStats, stackIco, teamIco, colorVar} from "./board.js";
 import {fireworks} from "./fireworks.js";
 
 const status = document.getElementById("status");
@@ -210,8 +210,8 @@ const plural = (n, w) => `<b>${n}</b> ${w}${n === 1 ? "" : "s"}`;
 // second account gets the totals, then a section for each account.
 const workList = parts => parts.length ? `<span class="work">${parts.map(x => `<i title="${x.tile}"><img src="${x.icon}" alt="">` +
   `<em>${x.label}${x.amount ? ` <b>${x.amount}</b>` : ""}</em>` +
-  (x.items.length ? `<span class="drops">` : "") + x.items.map(it => `<img class="drop${it.finished ? " fin" : ""}${it.counts ? "" : " other"}" src="${it.src}" alt="${it.name}" ` +
-    `title="${it.name}${it.finished ? " (finished the tile)" : it.counts ? "" : " (doesn't count)"}">`).join("") +
+  (x.items.length ? `<span class="drops">` : "") + x.items.map(it => stackIco(`<img class="drop${it.finished ? " fin" : ""}${it.counts ? "" : " other"}" src="${it.src}" alt="${it.name}" ` +
+    `title="${it.name}${it.finished ? " (finished the tile)" : it.counts ? "" : " (doesn't count)"}">`, it.qty)).join("") +
   (x.items.length ? `</span>` : "") + `</i>`).join("")}</span>` : "";
 const playerCards = team => `<div class="roll">${playerStats(team).map(p => `<div><b class="who">${p.name}</b>` +
   `<span>${plural(p.tiles, "tile")} · ${plural(p.drops, "drop")}</span>` +
