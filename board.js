@@ -1,6 +1,6 @@
 // Scoring and drawing: board, scores, tile panel, progress chart, rosters, theme.
 
-import {TEAMS, SOURCES, TILES, TILE_ICON, TRACK, ACT_NAMES, ACT_ICON, TILE_ITEMS, CLOG_SECTION, person, people} from "./data.js";
+import {TEAMS, SOURCES, TILES, TILE_ICON, TRACK, ACT_NAMES, ACT_ICON, TILE_ITEMS, CLOG_SECTION, DRY, person, people} from "./data.js";
 
 // The event data being shown (live or sample), set once by live-data.js through setData().
 let state = {}, dry = {}, drops = {}, byPlayer = {}, byAct = {}, NOW_H = 0;
@@ -554,6 +554,86 @@ function playerStats(team){
   }
 }
 
+// End-of-bingo titles, ToA style: one per person (main + alts) per team. Titles go out in this
+// order, each to the best person who doesn't have one yet; ties go to whoever got there first,
+// else name order. Returns {person: {title, why}}, why being the tooltip.
+function titlesFor(team){
+  const t = state[team.id] || {}, ps = people(team);
+  const tally = Object.fromEntries(ps.map(p => [p, {tiles: 0, tilesAt: -Infinity, last: -Infinity, lastTile: null,
+    got: 0, exp: 0, best: null, kc: 0, xp: 0, fish: 0, drops: 0, dropsAt: -Infinity, stack: null}]));
+  const of = a => tally[person(a)];
+  TILES.forEach((tile, i) => {
+    const e = t[i], d = DRY[i], tr = TRACK[i], h = e && e.done ? hoursOf(e.when) : null;
+    for (const p of new Set(helpers(i, team.id, e).map(person))) if (tally[p]){ tally[p].tiles++; tally[p].tilesAt = Math.max(tally[p].tilesAt, h); }
+    // Drop events as on the cards (held ones left out), the finishing item included.
+    const evs = ((drops[i] || {})[team.id] || []).filter(x => !x.held && of(x.by));
+    if (e && e.done && e.by && e.by !== "Team" && of(e.by)){
+      const p = of(e.by);
+      if (whenKey(e.when) > p.last){ p.last = whenKey(e.when); p.lastTile = i; }
+      evs.push({by: e.by, h, name: e.item || tile.n, qty: e.qty, kind: "progress"});
+    }
+    // Expected drops per KC from DRY; with several bosses on a tile, the team's split between
+    // them stands in for each player's (there's no per-player split).
+    let rate = 0;
+    if (d && d.barrows) rate = d.barrows * TILE_ITEMS[i].filter(r => r[2]).length;
+    else if (d){
+      const split = (byAct[i] || {})[team.id], total = split ? Object.values(split).reduce((a, b) => a + b, 0) || 1 : 1;
+      for (const [act, r] of Object.entries(d.rates)) rate += (split ? (split[act] || 0) / total : act === tr.acts[0] ? 1 : 0) * ((r.alone || 0) + (r.count || 0));
+    }
+    const killed = new Map();   // person -> their KC here
+    for (const [a, v] of (tr && (byPlayer[i] || {})[team.id]) || []){
+      const p = of(a);
+      if (!p) continue;
+      if (tr.unit === "KC") p.kc += v; else { p.xp += v; if (tr.acts.includes("Fishing")) p.fish += v; }
+      p.exp += v * rate;
+      if (v > 0) killed.set(p, (killed.get(p) || 0) + v);
+    }
+    for (const x of evs){
+      const p = of(x.by), q = x.qty || 1;
+      p.drops++; p.dropsAt = Math.max(p.dropsAt, x.h);
+      if (q > 1 && (!p.stack || q > p.stack.qty || q === p.stack.qty && x.h < p.stack.h)) p.stack = {qty: q, name: x.name, h: x.h};
+      // Luck only counts drops where their KC is tracked: without it there's nothing to expect.
+      // A drop's luck = 1 / the drops they'd expect from all their KC there (at least 0.005), at
+      // the item's own rate for Barrows and the tile's (any counting item) elsewhere.
+      if (!d || !killed.has(p) || x.kind !== "progress" || x.voided) continue;
+      p.got += q;
+      const kc = killed.get(p), r = d.barrows || rate, luck = 1 / Math.max(kc * r, 0.005);
+      if (!p.best || luck > p.best.luck || luck === p.best.luck && x.h < p.best.h)
+        p.best = {luck, h: x.h, name: x.name, kc, boss: tr.short || ACT_NAMES[tr.acts[0]] || tr.acts[0], odds: Math.round(1 / r)};
+    }
+  });
+  const n = v => v.toLocaleString("en-GB"), pl = (k, w) => `${n(k)} ${w}${k === 1 ? "" : "s"}`;
+  const ex = p => p.exp < 0.1 ? "<0.1" : p.exp.toFixed(1);
+  // [title, score (only > 0 is eligible; higher wins), when they got there (earlier wins), why].
+  // The Showoff: their single rarest drop (see above). The Leech: least KC + XP/10000 (10k XP
+  // standing in for about a kill's worth of time) among those with no tiles or drops.
+  const TITLES = [
+    ["The Carry", p => p.tiles, p => p.tilesAt, p => `finished ${pl(p.tiles, "tile")}`],
+    ["The Clutch", p => p.lastTile == null ? 0 : p.last, () => 0, p => `finished ${TILES[p.lastTile].short || TILES[p.lastTile].n} at ${dayLabel(p.last/60 - 24)}`],
+    ["The Showoff", p => p.best ? p.best.luck : 0, p => p.best.h, ({best: b}) => `${b.name} in ${n(b.kc)} ${b.boss} KC (1 in ~${n(b.odds)})`],
+    ["The Anchor", p => !p.got && p.exp >= 0.5 ? p.exp : 0, () => 0, p => `0 drops vs ${ex(p)} expected`],
+    ["The Entomophobe", p => p.kc, () => 0, p => `${n(p.kc)} KC`],
+    ["The Glutton", p => p.drops, p => p.dropsAt, p => pl(p.drops, "drop")],
+    ["The Baller", p => p.stack ? p.stack.qty : 0, p => p.stack.h, p => `${n(p.stack.qty)} ${p.stack.name}`],
+    ["The Tank", p => p.xp, () => 0, p => `${n(p.xp)} XP`],
+    ["The Swimmer", p => p.fish, () => 0, p => `${n(p.fish)} Fishing XP`],
+    ["The Leech", p => !p.tiles && !p.drops ? 1 / (1 + p.kc + p.xp / 10000) : 0, () => 0, () => "no tiles or drops"]
+  ];
+  const out = {}, byName = (a, b) => a.localeCompare(b, "en", {sensitivity: "base"});
+  const pick = ([, score, at], from) => from.filter(p => score(tally[p]) > 0)
+    .sort((a, b) => score(tally[b]) - score(tally[a]) || at(tally[a]) - at(tally[b]) || byName(a, b))[0];
+  // If the Showoff-to-be is tied for most tiles, The Carry goes to another of the tied, so
+  // they don't take The Carry on a tie-break and lose The Showoff.
+  const showoff = pick(TITLES[2], ps), most = Math.max(...ps.map(p => tally[p].tiles));
+  const carryTie = showoff && tally[showoff].tiles === most && ps.some(p => p !== showoff && tally[p].tiles === most);
+  for (const entry of TITLES){
+    const title = entry[0], best = pick(entry, ps.filter(p => !out[p] && !(carryTie && title === "The Carry" && p === showoff)));
+    if (best) out[best] = {title, why: `${title}: ${entry[3](tally[best])}`};
+  }
+  for (const p of ps) out[p] ||= {title: "The Picky Eater", why: "The Picky Eater: no other title left"};
+  return out;
+}
+
 // Called by live-data.js once the event data has loaded.
 export function start(){
   started = true;
@@ -568,4 +648,4 @@ export const entryOf = (teamId, i) => (state[teamId] || {})[i] || null;
 // A team's drops on a tile, not counting the one that finished it (mod.js lists them).
 export const dropsOf = (teamId, i) => ((drops[i] || {})[teamId] || []).slice();
 
-export {render, ranking, stats, playerStats, stackIco, teamIco, colorVar, dayLabel, hoursOf, whenKey, valueAt, LINES, ICON};
+export {render, ranking, stats, playerStats, titlesFor, stackIco, teamIco, colorVar, dayLabel, hoursOf, whenKey, valueAt, LINES, ICON};

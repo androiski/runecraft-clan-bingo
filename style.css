@@ -256,6 +256,8 @@ span.stk b.qty.m{color:#00ff80}
 .roll{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;text-align:left}
 .roll > div{background:rgba(0,0,0,.28);border-radius:6px;padding:8px 10px}
 .roll .who{display:block;color:#fff;font-size:1rem}
+.roll .ttl{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid var(--c);border-radius:999px;background:transparent;
+  color:inherit;font-size:.72rem;font-weight:700;font-style:normal;letter-spacing:.02em;vertical-align:middle;white-space:nowrap}
 .roll span{display:block;font-size:.85rem;color:#e6dcc4}
 .roll span b{color:#fff}
 .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--edge);color:var(--muted);font-size:.9rem;text-align:center}
