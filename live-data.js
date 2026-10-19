@@ -7,7 +7,7 @@
 // states of the page; see that file.
 
 import {TEAMS, TRACK, people} from "./data.js";
-import {setData, start, render, onRender, getView, ranking, playerStats, stackIco, teamIco, colorVar} from "./board.js";
+import {setData, start, render, onRender, getView, ranking, playerStats, titlesFor, stackIco, teamIco, colorVar} from "./board.js";
 import {fireworks} from "./fireworks.js";
 
 const status = document.getElementById("status");
@@ -213,7 +213,9 @@ const workList = parts => parts.length ? `<span class="work">${parts.map(x => `<
   (x.items.length ? `<span class="drops">` : "") + x.items.map(it => stackIco(`<img class="drop${it.finished ? " fin" : ""}${it.counts ? "" : " other"}" src="${it.src}" alt="${it.name}" ` +
     `title="${it.name}${it.finished ? " (finished the tile)" : it.counts ? "" : " (doesn't count)"}">`, it.qty)).join("") +
   (x.items.length ? `</span>` : "") + `</i>`).join("")}</span>` : "";
-const playerCards = team => `<div class="roll">${playerStats(team).map(p => `<div><b class="who">${p.name}</b>` +
+// Each card gets the person's title (titlesFor in board.js) after their name.
+const playerCards = (team, ti = titlesFor(team)) => `<div class="roll">${playerStats(team).map(p => `<div><b class="who">${p.name}` +
+  `<i class="ttl" title="${ti[p.name].why}">${ti[p.name].title}</i></b>` +
   `<span>${plural(p.tiles, "tile")} · ${plural(p.drops, "drop")}</span>` +
   (p.accounts ? p.accounts.map(a => `<span class="acct"><b>${a.name}</b> ${plural(a.tiles, "tile")} · ${plural(a.drops, "drop")}</span>` +
     (workList(a.parts) || `<span class="work none">Nothing yet</span>`)).join("") : workList(p.parts)) +
