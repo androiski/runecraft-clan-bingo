@@ -243,6 +243,12 @@ section.rosters h2,section.legend h2{font-family:var(--display);font-weight:400;
 .roll .work img.fin{outline:2px solid #f0d48a;outline-offset:1px;background:rgba(240,212,138,.15)}
 .roll .work img.other{opacity:.5}
 .roll .work img{width:18px;height:16px;object-fit:contain;image-rendering:pixelated;flex:none}
+/* A stack of one item: its size at the top left, OSRS-style (yellow, white in K, green in M). */
+span.stk{position:relative;display:inline-flex;flex:none}
+span.stk b.qty{position:absolute;left:0;top:-1px;font-size:10px;font-weight:700;line-height:1;color:#ffff00;pointer-events:none;
+  text-shadow:1px 0 #000,-1px 0 #000,0 1px #000,0 -1px #000,1px 1px #000,-1px -1px #000,1px -1px #000,-1px 1px #000}
+span.stk b.qty.k{color:#fff}
+span.stk b.qty.m{color:#00ff80}
 .roll .acct{display:block;margin-top:10px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15);font-size:.85rem;opacity:.85}
 .roll .acct b{font-size:.95rem;margin-right:4px}
 .roll .work.none{opacity:.6;font-size:.85rem}
