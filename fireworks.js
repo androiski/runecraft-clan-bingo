@@ -115,7 +115,7 @@ export function fireworks(color, iconUrls = []){
 
   function burst(x, y){
     flashes.push({x, y, r: rand(60, 110), life: 1});
-    const kind = shapes.length && Math.random() < 0.15 ? "item" : pick(["sphere", "sphere", "willow", "crackle"]);
+    const kind = shapes.length && Math.random() < 0.3 ? "item" : pick(["sphere", "sphere", "willow", "crackle"]);
     const n = Math.floor(rand(120, 180)), speed = rand(3.5, 6.5);
     if (kind === "item") shapeBurst(x, y);
     else if (kind === "sphere"){
