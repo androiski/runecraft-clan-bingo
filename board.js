@@ -108,7 +108,7 @@ function renderBoard(){
       if (doneBy.length === 1) fill = ` style="--c:${colorVar(doneBy[0].id)}"`;
       else if (doneBy.length > 1){
         const w = 10;
-        const stops = doneBy.map((t,k)=>`color-mix(in srgb,var(--tile) 45%,${colorVar(t.id)}) ${k*w}px ${(k+1)*w}px`).join(",");
+        const stops = doneBy.map((t,k)=>`color-mix(in srgb,var(--tile) var(--donemix),${colorVar(t.id)}) ${k*w}px ${(k+1)*w}px`).join(",");
         fill = ` style="background:repeating-linear-gradient(135deg,${stops})"`;
       }
       return `<button class="tile${doneBy.length?" done":""}"${fill} data-i="${i}" aria-pressed="${selected===i}"><span class="src">${src.mark}</span>${tileFace(i, tile)}<span class="pips">${pips}</span></button>`;
