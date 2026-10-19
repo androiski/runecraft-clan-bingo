@@ -25,7 +25,7 @@ TEAMS = {
     "Thompy Thiccs": ["yaint thiccy", "Cenaras", "BIS Ben", "chmsst", "Wildhero",
                       "47demonsand", "piinktaco", "The Biplane", "ll Grub ll", "BenReported", "Ipuntgnomes"],
     "The Desert Dogs": ["duhmass", "ndru", "Mspartam", "789", "Sparge",
-                        "Roof Sniffa", "Exviped", "Bhnr", "Halfmeatball", "nafun"],
+                        "Roof Sniffa", "Spoon Sniffa", "Exviped", "Bhnr", "Halfmeatball", "nafun"],
     "The Bakery": ["tv milk", "rpwh", "Im Lablabi", "nimbis", "Gpmorgnchase",
                    "spotttt", "Naseeph", "Dead Naseeph", "LootBuster42", "PlE", "Alex Welshy"],
 }
