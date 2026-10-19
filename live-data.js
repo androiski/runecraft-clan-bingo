@@ -142,6 +142,8 @@ if (mode === "preview"){
   // box between them so it's clear where that starts.
   document.querySelector("section.rosters").after(banner);
 }
+// Once it's over, the how-to notice isn't needed up top: it goes under the Timeline.
+if (mode !== "preview" && Date.now() > endMs) document.querySelector("#timeline").after(document.querySelector(".callout"));
 
 // Live: check for new data every 5 minutes and reload when the update job has saved some.
 if (mode === "live" && !live.final && Date.now() < (finalMs || endMs + 3 * 3600e3)) setInterval(async () => {
