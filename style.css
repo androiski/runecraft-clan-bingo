@@ -2,10 +2,14 @@
 @font-face{font-family:"RuneScape";src:url("https://cdn.jsdelivr.net/gh/runelite/runelite@runelite-parent-1.13.1/runelite-client/src/main/resources/net/runelite/client/ui/runescape.ttf") format("truetype");font-display:swap}
 @font-face{font-family:"RuneScape Bold";src:url("https://cdn.jsdelivr.net/gh/runelite/runelite@runelite-parent-1.13.1/runelite-client/src/main/resources/net/runelite/client/ui/runescape_bold.ttf") format("truetype");font-display:swap}
 :root{
-  --bg:#1c150d; --panel:#2e2417; --tile:#3a2d1c; --edge:#8a7246; --gold:#d8b46a;
-  --ink:#ece0c4; --muted:#b3a382; --line:#5a4830;
+  --bg:#140f09; --panel:#241b11; --tile:#2e2316; --edge:#8a7246; --gold:#d8b46a;
+  --ink:#ece0c4; --muted:#b3a382; --line:#4a3b27;
   --tt:#1aa59a; --dd:#bd8612; --bk:#dc4a62;
   --ok:#8fc77a; --warn:#e3b04b; --bad:#e06a5a;
+  /* gold small text, text on team-tinted results, board frame, mixes */
+  --link:#d8b46a; --onc:#fff; --onc2:#e6dcc4; --card:rgba(0,0,0,.28); --sep:rgba(255,255,255,.08); --sep2:rgba(255,255,255,.15);
+  --fin:#f0d48a; --btag:#ff0; --hshadow:2px 2px 0 #000; --tshadow:0 1px 2px rgba(0,0,0,.6); --frame:#0d0a06; --onframe:var(--muted); --btitle:#f0d48a; --srcop:.85; --hintop:.8; --noneop:.6;
+  --winmix:70%; --teammix:85%; --donemix:45%;
   --display:"RuneScape Bold", Georgia, serif;
   --plain:"RuneScape", Georgia, serif;
   --shadow:1px 1px 0 #000;
@@ -13,23 +17,33 @@
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-    --bg:#efe4cc; --panel:#e4d5b5; --tile:#d9c79f; --edge:#8a6d3b; --gold:#7a5a20;
-    --ink:#2b2013; --muted:#5e4c30; --line:#b9a47a;
-    --tt:#008c80; --dd:#a87a00; --bk:#b0204f;
-    --ok:#3d7a2a; --warn:#8a5a00; --bad:#b0362a; --shadow:none;
+    --bg:#e2dbc8; --panel:#d8ccb4; --tile:#c0a886; --edge:#94866d; --gold:#936039;
+    --ink:#1d1710; --muted:#4a3f30; --line:#b8a282;
+    --tt:#008176; --dd:#946b00; --bk:#b0204f;
+    --ok:#316222; --warn:#794f00; --bad:#9f3026; --shadow:none;
+    --link:#784e2e; --onc:var(--ink); --onc2:var(--muted); --card:var(--bg); --sep:rgba(0,0,0,.1); --sep2:var(--line);
+    --fin:var(--gold); --btag:var(--link); --hshadow:none; --tshadow:none; --frame:var(--edge); --onframe:var(--ink); --btitle:var(--ink); --srcop:1; --hintop:1; --noneop:1;
+    --winmix:88%; --teammix:92%; --donemix:60%;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#1c150d; --panel:#2e2417; --tile:#3a2d1c; --edge:#8a7246; --gold:#d8b46a;
-  --ink:#ece0c4; --muted:#b3a382; --line:#5a4830;
+  --bg:#140f09; --panel:#241b11; --tile:#2e2316; --edge:#8a7246; --gold:#d8b46a;
+  --ink:#ece0c4; --muted:#b3a382; --line:#4a3b27;
   --tt:#1aa59a; --dd:#bd8612; --bk:#dc4a62;
   --ok:#8fc77a; --warn:#e3b04b; --bad:#e06a5a;
+  /* gold small text, text on team-tinted results, board frame, mixes */
+  --link:#d8b46a; --onc:#fff; --onc2:#e6dcc4; --card:rgba(0,0,0,.28); --sep:rgba(255,255,255,.08); --sep2:rgba(255,255,255,.15);
+  --fin:#f0d48a; --btag:#ff0; --hshadow:2px 2px 0 #000; --tshadow:0 1px 2px rgba(0,0,0,.6); --frame:#0d0a06; --onframe:var(--muted); --btitle:#f0d48a; --srcop:.85; --hintop:.8; --noneop:.6;
+  --winmix:70%; --teammix:85%; --donemix:45%;
 }
 :root[data-theme="light"]{
-  --bg:#efe4cc; --panel:#e4d5b5; --tile:#d9c79f; --edge:#8a6d3b; --gold:#7a5a20;
-  --ink:#2b2013; --muted:#5e4c30; --line:#b9a47a;
-  --tt:#008c80; --dd:#a87a00; --bk:#b0204f;
-  --ok:#3d7a2a; --warn:#8a5a00; --bad:#b0362a; --shadow:none;
+  --bg:#e2dbc8; --panel:#d8ccb4; --tile:#c0a886; --edge:#94866d; --gold:#936039;
+  --ink:#1d1710; --muted:#4a3f30; --line:#b8a282;
+  --tt:#008176; --dd:#946b00; --bk:#b0204f;
+  --ok:#316222; --warn:#794f00; --bad:#9f3026; --shadow:none;
+  --link:#784e2e; --onc:var(--ink); --onc2:var(--muted); --card:var(--bg); --sep:rgba(0,0,0,.1); --sep2:var(--line);
+  --fin:var(--gold); --btag:var(--link); --hshadow:none; --tshadow:none; --frame:var(--edge); --onframe:var(--ink); --btitle:var(--ink); --srcop:1; --hintop:1; --noneop:1;
+  --winmix:88%; --teammix:92%; --donemix:60%;
 }
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -47,7 +61,7 @@ h1 .h1ico{height:.9em;width:auto;margin-right:.3em;vertical-align:-.08em;image-r
 .btn{background:var(--panel);border:1px solid var(--edge);border-radius:4px;padding:6px 12px;cursor:pointer}
 .btn.icon{width:40px;height:40px;padding:0;display:grid;place-items:center;color:var(--gold)}
 .btn.icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.btn[aria-pressed="true"]{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.btn[aria-pressed="true"]{background:var(--link);color:var(--bg);border-color:var(--link)}
 
 .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:20px 0}
 .score{background:var(--panel);border-left:5px solid var(--c);padding:12px 14px;border-radius:2px 6px 6px 2px}
@@ -132,7 +146,7 @@ h1 .h1ico{height:.9em;width:auto;margin-right:.3em;vertical-align:-.08em;image-r
 .timeline .who .tico-s{margin:0}
 .timeline .what{min-width:0}
 .timeline .by{color:var(--muted);font-size:.82rem;white-space:nowrap}
-.timeline .btag{font-family:var(--display);color:#ff0;text-shadow:1px 1px 0 #000;margin-left:4px}
+.timeline .btag{font-family:var(--display);color:var(--btag);text-shadow:var(--shadow);margin-left:4px}
 @media (max-width:600px){
   .timeline li button{grid-template-columns:4.2em auto 1fr;row-gap:2px}
   .timeline .tname{display:none}
@@ -142,11 +156,9 @@ h1 .h1ico{height:.9em;width:auto;margin-right:.3em;vertical-align:-.08em;image-r
 .dry th.n{text-align:right}
 .dry .none{color:var(--muted);margin:6px 0 0}
 
-.boardframe{background:#14100a;padding:6px;border:1px solid var(--edge);border-radius:6px}
-:root:not([data-theme="dark"]) .boardframe{background:var(--edge)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .boardframe{background:#14100a}}
-.boardtitle{text-align:center;font-family:var(--display);color:#f0d48a;padding:6px 0 10px;font-size:32px;line-height:1;text-shadow:1px 1px 0 #000}
-.boardsub{text-align:center;color:var(--muted);font-size:.8rem;margin:-2px 0 6px}
+.boardframe{background:var(--frame);padding:6px;border:1px solid var(--edge);border-radius:6px}
+.boardtitle{text-align:center;font-family:var(--display);color:var(--btitle);padding:6px 0 10px;font-size:32px;line-height:1;text-shadow:var(--shadow)}
+.boardsub{text-align:center;color:var(--onframe);font-size:.8rem;margin:-2px 0 6px}
 .boardsub:empty{display:none}
 .board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 .tile{position:relative;aspect-ratio:1/1;min-height:0;overflow:hidden;background:var(--tile);border:1px solid var(--edge);border-radius:6px;padding:8px 6px 22px;cursor:pointer;
@@ -161,9 +173,9 @@ h1 .h1ico{height:.9em;width:auto;margin-right:.3em;vertical-align:-.08em;image-r
 .tile .short{display:none}
 .tile:hover{background:color-mix(in srgb,var(--tile) 80%,var(--gold))}
 .tile[aria-pressed="true"]{outline:2px solid var(--gold);outline-offset:-3px}
-.tile.done{background:color-mix(in srgb,var(--tile) 45%,var(--c));color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.tile .src{position:absolute;top:4px;right:6px;font-family:var(--body);font-size:.62rem;color:var(--muted);opacity:.85}
-.tile.done .src{color:#fff}
+.tile.done{background:color-mix(in srgb,var(--tile) var(--donemix),var(--c));color:var(--onc);text-shadow:var(--tshadow)}
+.tile .src{position:absolute;top:4px;right:6px;font-family:var(--body);font-size:.62rem;color:var(--muted);opacity:var(--srcop)}
+.tile.done .src{color:var(--onc)}
 .pips{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:4px}
 .pip{width:12px;height:12px;border-radius:2px;border:2px solid var(--c);background:transparent}
 .pip.done{background:var(--c)}
@@ -215,7 +227,7 @@ section.rosters h2,section.legend h2{font-family:var(--display);font-weight:400;
 .roster li.multi .accs{display:grid;gap:3px;justify-items:end}
 .roster li.multi .acc{display:flex;align-items:center;gap:6px}
 .roster li.multi small{color:var(--muted)}
-.chip{font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:0 8px;white-space:nowrap}
+.chip{font-size:.75rem;color:var(--muted);border:1px solid var(--muted);border-radius:10px;padding:0 8px;white-space:nowrap}
 .chip.ok{color:var(--ok);border-color:var(--ok)}
 .chip.warn{color:var(--warn);border-color:var(--warn)}
 .chip.bad{color:var(--bg);background:var(--bad);border-color:var(--bad);font-weight:600}
@@ -223,24 +235,25 @@ section.rosters h2,section.legend h2{font-family:var(--display);font-weight:400;
 .banner{margin:20px 0 0;padding:16px 22px;border:2px dashed var(--warn);border-radius:8px;background:color-mix(in srgb,var(--panel) 85%,var(--warn));text-align:center}
 .banner h2{font-family:var(--display);font-weight:400;color:var(--warn);font-size:32px;margin:0 0 4px;text-shadow:var(--shadow)}
 .banner p{margin:0 auto;max-width:60ch;font-size:1.1rem}
+.banner a{color:inherit}
 .countdown{margin:12px 0 0;padding:18px 22px;background:var(--panel);border:1px solid var(--edge);border-radius:8px;text-align:center}
 .countdown h2{font-family:var(--display);font-weight:400;color:var(--gold);font-size:24px;margin:0 0 4px;text-shadow:var(--shadow)}
 .countdown .when{margin:12px 0 0;color:var(--muted)}
 .countdown.go h2,.countdown.win h2{font-size:48px;line-height:1.1;margin-bottom:8px}
 .countdown.go{border:2px solid var(--gold)}
-.countdown.win{border:2px solid var(--c);background:color-mix(in srgb,var(--panel) 70%,var(--c))}
-.countdown.win h2{color:#fff;text-shadow:2px 2px 0 #000}
+.countdown.win{border:2px solid var(--c);background:color-mix(in srgb,var(--panel) var(--winmix),var(--c))}
+.countdown.win h2{color:var(--onc);text-shadow:var(--hshadow)}
 .countdown.win .when{color:var(--ink);font-size:1.1rem}
-.countdown.team{border:2px solid var(--c);background:color-mix(in srgb,var(--panel) 85%,var(--c))}
-.countdown.team h2{font-size:36px;color:#fff;text-shadow:2px 2px 0 #000;margin-bottom:6px}
+.countdown.team{border:2px solid var(--c);background:color-mix(in srgb,var(--panel) var(--teammix),var(--c))}
+.countdown.team h2{font-size:36px;color:var(--onc);text-shadow:var(--hshadow);margin-bottom:6px}
 .countdown.team .when{color:var(--ink)}
 .countdown.team .congrats{margin:14px 0 10px;font-family:var(--display);font-size:18px;color:var(--ink)}
 .roll .work{margin-top:4px;line-height:1.35}
-.roll .work i{display:flex;align-items:center;gap:4px;font-style:normal;padding:2px 0;border-bottom:1px dotted rgba(255,255,255,.08)}
+.roll .work i{display:flex;align-items:center;gap:4px;font-style:normal;padding:2px 0;border-bottom:1px dotted var(--sep)}
 .roll .work em{font-style:normal;flex:1;min-width:0}
 .roll .work .drops{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:3px;max-width:55%}
 .roll .work img.drop{width:20px;height:18px;border-radius:3px}
-.roll .work img.fin{outline:2px solid #f0d48a;outline-offset:1px;background:rgba(240,212,138,.15)}
+.roll .work img.fin{outline:2px solid var(--fin);outline-offset:1px;background:rgba(240,212,138,.15)}
 .roll .work img.other{opacity:.5}
 .roll .work img{width:18px;height:16px;object-fit:contain;image-rendering:pixelated;flex:none}
 /* A stack of one item: its size at the top left, OSRS-style (yellow, white in K, green in M). */
@@ -249,22 +262,22 @@ span.stk b.qty{position:absolute;left:0;top:-1px;font-size:10px;font-weight:700;
   text-shadow:1px 0 #000,-1px 0 #000,0 1px #000,0 -1px #000,1px 1px #000,-1px -1px #000,1px -1px #000,-1px 1px #000}
 span.stk b.qty.k{color:#fff}
 span.stk b.qty.m{color:#00ff80}
-.roll .acct{display:block;margin-top:10px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15);font-size:.85rem;opacity:.85}
+.roll .acct{display:block;margin-top:10px;padding-top:6px;border-top:1px solid var(--sep2);font-size:.85rem;opacity:.85}
 .roll .acct b{font-size:.95rem;margin-right:4px}
-.roll .work.none{opacity:.6;font-size:.85rem}
-.countdown.win .congrats{margin:14px 0 10px;font-family:var(--display);font-size:20px;color:#fff;text-shadow:1px 1px 0 #000}
+.roll .work.none{opacity:var(--noneop);font-size:.85rem}
+.countdown.win .congrats{margin:14px 0 10px;font-family:var(--display);font-size:20px;color:var(--onc);text-shadow:var(--shadow)}
 .roll{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;text-align:left}
-.roll > div{background:rgba(0,0,0,.28);border-radius:6px;padding:8px 10px}
-.roll .who{display:block;color:#fff;font-size:1rem}
+.roll > div{background:var(--card);border-radius:6px;padding:8px 10px}
+.roll .who{display:block;color:var(--onc);font-size:1rem}
 .roll .ttl{display:inline-block;margin-left:6px;padding:1px 7px;border:1px solid var(--c);border-radius:999px;background:transparent;
   color:inherit;font-size:.72rem;font-weight:700;font-style:normal;letter-spacing:.02em;vertical-align:middle;white-space:nowrap}
-.roll span{display:block;font-size:.85rem;color:#e6dcc4}
-.roll span b{color:#fff}
+.roll span{display:block;font-size:.85rem;color:var(--onc2)}
+.roll span b{color:var(--onc)}
 .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--edge);color:var(--muted);font-size:.9rem;text-align:center}
 .foot p{margin:4px 0}
-.foot a{color:var(--gold)}
+.foot a{color:var(--link)}
 .foot .fine{font-size:.78rem;opacity:.8}
-.countdown.win .hint{margin:2px 0 8px;font-size:.9rem;color:#e6dcc4;opacity:.8}
+.countdown.win .hint{margin:2px 0 8px;font-size:.9rem;color:var(--onc2);opacity:var(--hintop)}
 /* countdown: four boxes like in-game stat panels */
 .timer{display:flex;justify-content:center;gap:10px;margin-top:8px}
 .timer div{min-width:78px;background:var(--bg);border:1px solid var(--edge);border-radius:6px;padding:8px 6px 6px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--bg) 70%,#000)}
@@ -275,7 +288,7 @@ span.stk b.qty.m{color:#00ff80}
 .callout h2{font-family:var(--display);font-weight:400;color:var(--gold);font-size:24px;text-shadow:var(--shadow);margin:0 0 8px}
 .callout ol{margin:0 0 8px;padding-left:1.3em}
 .callout li{margin:4px 0}
-.callout a,.rules a{color:var(--gold)}
+.callout a,.rules a{color:var(--link)}
 section.rules{margin-top:32px}
 section.rules h2{font-family:var(--display);font-weight:400;color:var(--gold);font-size:32px;text-shadow:var(--shadow);margin:0 0 4px}
 .rule{font-size:.9rem;margin:-6px 0 14px;padding:8px 10px;background:var(--bg);border-radius:4px}
@@ -300,14 +313,14 @@ section.legend{margin-top:32px}
 /* demo switcher (dev branch only) */
 .foot .demos{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-bottom:12px}
 .foot .demos a{text-decoration:none;color:var(--ink);font-size:.85rem;padding:4px 10px}
-.foot .demos a[aria-current="page"]{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.foot .demos a[aria-current="page"]{background:var(--link);color:var(--bg);border-color:var(--link)}
 
 /* Mod entry (mod.js): a collapsible section at the bottom of the tile panel. */
 .modbox{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
 .modbox summary{cursor:pointer;color:var(--muted);font-size:.85rem}
-.modbox[open] summary{color:var(--gold)}
+.modbox[open] summary{color:var(--link)}
 .modbox .note{color:var(--muted);font-size:.85rem;margin:0}
-.modbox h4{margin:14px 0 4px;color:var(--gold);font-size:.9rem}
+.modbox h4{margin:14px 0 4px;color:var(--link);font-size:.9rem}
 .mbtns{display:flex;align-items:center;gap:14px}
 .mmode{display:flex;gap:16px;font-size:.9rem}
 .mform .mmode label{display:inline-flex;align-items:center;gap:5px;color:var(--ink);cursor:pointer}
@@ -320,8 +333,8 @@ section.legend{margin-top:32px}
 .mform label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
 .mform input,.mform select{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--edge);border-radius:4px;padding:6px 8px;min-width:0}
 .mform .btn{justify-self:start}
-.mmsg{margin:0;font-size:.85rem;color:var(--gold);min-height:1em}
+.mmsg{margin:0;font-size:.85rem;color:var(--link);min-height:1em}
 .modbox .opt{color:var(--muted);font-size:.8rem}
 .mrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dotted var(--line);font-size:.88rem}
-.linkish{all:unset;cursor:pointer;color:var(--gold);text-decoration:underline}
+.linkish{all:unset;cursor:pointer;color:var(--link);text-decoration:underline}
 .modtag{font-size:.7rem;padding:0 4px;border:1px solid currentColor;border-radius:3px;opacity:.8;vertical-align:1px}
