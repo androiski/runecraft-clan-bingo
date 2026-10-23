@@ -16,8 +16,9 @@ EVENT_END = "2026-10-19T10:00:00Z"
 binding = "ENTRIES"
 id = "fe1f0a63096f4831a800b7b66f8fae82"
 
-# Starts the board update every 15 min (see scheduled() in index.js), plus one a minute after
-# the end (19 Oct 10:00). The hourly roster check ("30 * * * *") was only needed before the
-# event. Times are UTC.
+# No timers: the event is over and update.yml is switched off. During the event this was
+# ["0,15,30,45 * * * *", "1 10 19 10 *"] (board update every 15 min, plus one a minute after
+# the end), with "30 * * * *" for the hourly roster check before the start. Times are UTC.
+# An empty list removes the schedules on deploy; scheduled() in index.js is kept for next time.
 [triggers]
-crons = ["0,15,30,45 * * * *", "1 10 19 10 *"]
+crons = []
